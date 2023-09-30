@@ -1,73 +1,73 @@
 import os
-import requests
-import sys
-import subprocess
+import tkinter as tk
+from tkinter import filedialog
 import jieba
 
 
-def check_for_updates(current_version, update_url):
-    # 发送请求检查是否有新版本
-    response = requests.get(update_url)
-    new_version = response.text.strip()
+class App:
+    def __init__(self, root):
+        self.root = root
+        self.input_directory = ''
+        self.output_directory = ''
 
-    if new_version != current_version:
-        return new_version
-    else:
-        return None
+        # 创建并放置按钮和标签
+        self.choose_input_button = tk.Button(root, text="选择输入目录", command=self.choose_input)
+        self.choose_input_button.pack(padx=20, pady=10)
+
+        self.choose_output_button = tk.Button(root, text="选择输出目录", command=self.choose_output)
+        self.choose_output_button.pack(padx=20, pady=10)
+
+        self.run_button = tk.Button(root, text="运行分词", command=self.run_script)
+        self.run_button.pack(padx=20, pady=20)
+
+        self.output_label = tk.Label(root, text="")
+        self.output_label.pack(padx=20, pady=20)
+
+    def choose_input(self):
+        self.input_directory = filedialog.askdirectory()
+        self.output_label.config(text=f"输入目录: {self.input_directory}\n输出目录: {self.output_directory}")
+
+    def choose_output(self):
+        self.output_directory = filedialog.askdirectory()
+        self.output_label.config(text=f"输入目录: {self.input_directory}\n输出目录: {self.output_directory}")
+
+    def run_script(self):
+        # 如果输入和输出目录都已选择
+        if self.input_directory and self.output_directory:
+            # 运行 main.py
+            self.segment_and_save()
+        else:
+            self.output_label.config(text="请先选择输入和输出目录.")
+
+    def segment_and_save(self):
+
+        # 确保输出目录存在，如果不存在则创建
+        if not os.path.exists(self.output_directory):
+            os.makedirs(self.output_directory)
+
+        # 获取输入目录下所有的txt文件
+        input_files = [f for f in os.listdir(self.input_directory) if f.endswith('.txt')]
+
+        for input_file in input_files:
+            input_path = os.path.join(self.input_directory, input_file)
+            output_path = os.path.join(self.output_directory, input_file)
+
+            # 打开原始文本文件
+            with open(input_path, 'r', encoding='utf-8') as f:
+                text = f.read()
+
+            # 使用jieba进行分词
+            seg_list = jieba.cut(text, cut_all=False)
+
+            # 将分词结果保存到输出文件
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(' '.join(seg_list))
 
 
-def download_update(update_url, download_path):
-    # 下载新版本
-    response = requests.get(update_url)
-    with open(download_path, 'wb') as f:
-        f.write(response.content)
+# 创建主窗口
+root = tk.Tk()
+root.title("分词工具")
+app = App(root)
 
-
-def update_program(update_url, current_version, program_path):
-    # 获取新版本号
-    new_version = check_for_updates(current_version, update_url)
-
-    if new_version:
-        # 下载新版本
-        download_path = 'new_version.zip'
-        download_update(update_url, download_path)
-
-        # 替换当前程序文件
-        os.replace(download_path, program_path)
-
-        # 重新启动程序
-        subprocess.Popen([sys.executable, program_path])
-        sys.exit()
-
-
-def segment_and_save(input_dir, output_dir):
-    # 确保输出目录存在，如果不存在则创建
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    # 获取输入目录下所有的txt文件
-    input_files = [f for f in os.listdir(input_dir) if f.endswith('.txt')]
-
-    for input_file in input_files:
-        input_path = os.path.join(input_dir, input_file)
-        output_path = os.path.join(output_dir, input_file)
-
-        # 打开原始文本文件
-        with open(input_path, 'r', encoding='utf-8') as f:
-            text = f.read()
-
-        # 使用jieba进行分词
-        seg_list = jieba.cut(text, cut_all=False)
-
-        # 将分词结果保存到输出文件
-        with open(output_path, 'w', encoding='utf-8') as f:
-            f.write(' '.join(seg_list))
-
-
-if __name__ == "__main__":
-    # 设置输入和输出目录
-    input_directory = 'origin'
-    output_directory = 'output'
-
-    # 执行分词并保存
-    segment_and_save(input_directory, output_directory)
+# 运行主循环
+root.mainloop()
