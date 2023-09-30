@@ -1,15 +1,28 @@
 #!/bin/bash
 
-echo ""
+# Function to check if a command is available
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
 
-# 获取脚本所在目录
-ROOT_DIR="$(pwd)"
+# Check if Python 3.9 is installed
+if ! command_exists python3.9; then
+  echo "Python 3.9 not found. Installing Python 3.9 using Homebrew..."
+  brew install python@3.9
+else
+  echo "Python 3.9 is already installed."
+fi
 
-# 更新代码
-git pull --no-rebase origin master
+# Check if Git is installed
+if ! command_exists git; then
+  echo "Git not found. Installing Git using Homebrew..."
+  brew install git
+else
+  echo "Git is already installed."
+fi
 
-# 安装或升级依赖
-#pip3 install --upgrade -r requirements.txt
+# Install dependencies using pip
+echo "Installing dependencies..."
+python3.9 -m pip install -r requirements.txt
 
-echo "更新程序完成，请按下Press继续..."
-read -r
+echo "Script completed."
