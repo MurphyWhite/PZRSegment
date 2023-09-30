@@ -32,7 +32,8 @@ jobs:
     - name: Lint with flake8
       run: |
         pyinstaller --onefile main.py
-        ls
+        ls dist/
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.3
-         
+      with:
+        path: dist/*       
