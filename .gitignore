@@ -1,6 +1,6 @@
 # project
-origin
-output
+origin/*
+output/*
 testCase
 
 # Byte-compiled / optimized / DLL files
