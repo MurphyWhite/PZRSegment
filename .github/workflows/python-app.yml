@@ -23,7 +23,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Pyinstall 
       run: |
-        pyinstaller --onefile main.py、
+        pyinstaller --onefile main.py
         ls dist
 
   release:
