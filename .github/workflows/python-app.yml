@@ -23,7 +23,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Pyinstall 
       run: |
-        pyinstaller -windowed -F main.py
+        pyinstaller --windowed -F main.py
         ls dist
     - name: Create Release
       id: create_release
