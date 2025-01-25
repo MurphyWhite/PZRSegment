@@ -1,8 +1,6 @@
 name: Python application
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
 
 permissions:
   contents: write
